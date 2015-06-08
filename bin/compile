@@ -25,13 +25,13 @@ clean_cache() {
   rm -rf "$CACHE_DIR/haxe" # (for apps still on the older caching strategy)
 }
 
-if [ -d $CACHE_DIR/haxe ]; then
+# if [ -d $CACHE_DIR/haxe ]; then
 
-  echo "Restoring Haxe Build Tools from cache" | arrow
-  ls $CACHE_DIR/haxe
-  cp -r $CACHE_DIR/haxe/* $VENDOR_DIR
+#   echo "Restoring Haxe Build Tools from cache" | arrow
+#   ls $CACHE_DIR/haxe
+#   cp -r $CACHE_DIR/haxe/* $VENDOR_DIR
 
-else
+# else
 
   mkdir -p $VENDOR_DIR/bin
   mkdir -p $VENDOR_DIR/lib
@@ -198,7 +198,7 @@ else
   #   cp -r $VENDOR_DIR/* $CACHE_DIR/haxe
   # fi
 
-fi
+# fi
 
 echo "Building Haxe Project from build.hxml" | arrow
 
