@@ -18,5 +18,5 @@ echo "exporting PATH"
 cd ../
 PROFILE_PATH=$BUILD_DIR/.profile.d/haxe.sh
 mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:$HOME/vendor/haxe-3.2.0"' > $PROFILE_PATH
+echo 'export PATH="$PATH:$BUILD_DIR/$VENDOR_DIR/haxe-3.2.0"' > $PROFILE_PATH
 echo "-----> Done"
