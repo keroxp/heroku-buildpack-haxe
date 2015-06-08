@@ -124,9 +124,9 @@ cd bdwgc
 git clone git://github.com/ivmai/libatomic_ops.git
 autoreconf -vif
 automake --add-missing
-./configure
+./configure --prefix=$VENDOR_DIR
 make
-make install --prefix=$VENDOR_DIR
+make install
 
 
 if [ -d "/usr/lib64" ] && [ ! -f "/usr/lib64/libpcre.so.3" ]; then
