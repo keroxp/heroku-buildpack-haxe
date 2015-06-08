@@ -44,7 +44,6 @@ ln -s $HAXE_DIR/haxe $BIN_DIR/haxe
 ln -s $HAXE_DIR/haxelib $BIN_DIR/haxelib
 mkdir -p $HAXE_DIR/lib
 chmod -R 777 $HAXE_DIR/lib
-
 $BIN_DIR/haxelib setup $HAXE_DIR/lib
 
 echo "exporting PATH" | indent
