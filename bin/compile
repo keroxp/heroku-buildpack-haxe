@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+echo "-----> Install haxe-3.2.0"
+BUILD_DIR=$1
+
+echo "BUILD_DIR=$BUILD_DIR"
+VENDOR_DIR="vendor"
+DOWNLOAD_URL="http://haxe.org/website-content/downloads/3.2.0/downloads/haxe-3.2.0-linux32.tar.gz"
+
+echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+cd $BUILD_DIR
+mkdir -p $VENDOR_DIR
+cd $VENDOR_DIR
+wget $DOWNLOAD_URL
+tar xzvf haxe-3.2.0-linux32.tar.gz
+
+echo "exporting PATH"
+cd ../
+PROFILE_PATH=$BUILD_DIR/.profile.d/haxe.sh
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:$HOME/vendor/haxe-3.2.0"' > $PROFILE_PATH
+echo "-----> Done"
