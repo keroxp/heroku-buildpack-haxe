@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
 
 HAXE_VERSION=3.2.0
 NEKO_VERSION=2.0.0
@@ -14,43 +15,226 @@ arrow() {
 echo "Install haxe-$HAXE_VERSION" | arrow
 BUILD_DIR=$1
 
-VENDOR_DIR="vendor"
-mkdir -p $BUILD_DIR/$VENDOR_DIR
+VENDOR_DIR= $BUILD_DIR/vendor
+mkdir -p $VENDOR_DIR
+mkdir -p $VENDOR_DIR/bin
+export PATH=$PATH:$VENDOR_DIR/bin
+mkdir -p $VENDOR_DIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$VENDOR_DIR/lib
 
-BIN_DIR=$BUILD_DIR/bin
-mkdir -p $BIN_DIR
+if [ -n "$(command -v yum)" ]; then
 
-LIB_DIR=$BUILD_DIR/$VENDOR_DIR/lib
-mkdir -p $LIB_DIR
+  echo "Installing Dependencies" | arrow
 
-HAXE_DIR=$LIB_DIR/haxe
-mkdir -p $HAXE_DIR
+  yum -y install wget
 
-echo "BUILD_DIR=$BUILD_DIR" | indent
+elif [ -n "$(command -v pacman)" ]; then
 
-cd $VENDOR_DIR
+  echo "Installing Dependencies" | arrow
 
-echo "Download Haxe Binary" | arrow
+  set -e
+  pacman -S wget --noconfirm
 
-if [ `uname -m` = "x86_64" ]; then
-  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux64.tar.gz
-  tar xzf haxe-$HAXE_VERSION-linux64.tar.gz -C $LIB_DIR/haxe --strip-components=1
-else
-  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux32.tar.gz
-  tar xzf haxe-$HAXE_VERSION-linux32.tar.gz -C $LIB_DIR/haxe --strip-components=1
+elif [ -n "$(command -v apt-get)" ]; then
+
+  echo "Removing Haxe (if installed)" | arrow
+
+  set +e
+   apt-get remove haxe neko
+  set -e
+
 fi
 
-ln -s $HAXE_DIR/haxe $BIN_DIR/haxe
-ln -s $HAXE_DIR/haxelib $BIN_DIR/haxelib
-mkdir -p $HAXE_DIR/lib
-chmod -R 777 $HAXE_DIR/lib
-$BIN_DIR/haxelib setup $HAXE_DIR/lib
 
-echo "exporting PATH" | indent
-cd ../
+if [ `uname -m` = "x86_64" ]; then
+
+  echo "Downloading Neko $NEKO_VERSION (64-bit)" | arrow
+
+  wget -c http://nekovm.org/_media/neko-$NEKO_VERSION-linux64.tar.gz
+
+  echo "Installing Neko $NEKO_VERSION" | arrow
+
+  # Extract and copy files to $BUILD_DIR/lib/neko
+
+  tar xvzf neko-$NEKO_VERSION-linux64.tar.gz
+  mkdir -p $VENDOR_DIR/lib/neko
+  rm -rf $VENDOR_DIR/lib/neko/neko
+  rm -rf $VENDOR_DIR/lib/neko/nekotools
+  cp -r neko-$NEKO_VERSION-linux/* $VENDOR_DIR/lib/neko
+
+  # Add symlinks
+
+  rm -rf $VENDOR_DIR/bin/neko
+  rm -rf $VENDOR_DIR/bin/nekoc
+  rm -rf $VENDOR_DIR/bin/nekotools
+  rm -rf $VENDOR_DIR/lib/libneko.so
+
+  ln -s $VENDOR_DIR/lib/neko/libneko.so $VENDOR_DIR/lib/libneko.so
+  ln -s $VENDOR_DIR/lib/neko/neko $VENDOR_DIR/bin/neko
+  ln -s $VENDOR_DIR/lib/neko/nekoc $VENDOR_DIR/bin/nekoc
+  ln -s $VENDOR_DIR/lib/neko/nekotools $VENDOR_DIR/bin/nekotools
+
+  if [ -d "/usr/lib64" ]; then
+
+    set +e
+     rm -rf /usr/lib64/libneko.so
+     ln -s /usr/lib/neko/libneko.so $VENDOR_DIR/lib64/libneko.so
+    set -e
+
+  fi
+
+  # Cleanup
+
+  rm -rf neko-$NEKO_VERSION-linux
+  rm neko-$NEKO_VERSION-linux64.tar.gz
+
+
+else
+
+  echo "Downloading Neko $NEKO_VERSION (32-bit)" | arrow
+
+  wget -c http://nekovm.org/_media/neko-$NEKO_VERSION-linux.tar.gz
+
+  echo "Installing Neko $NEKO_VERSION" | arrow
+
+
+  # Extract and copy files to $VENDOR_DIR/lib/neko
+
+  tar xvzf neko-$NEKO_VERSION-linux.tar.gz
+  mkdir -p $VENDOR_DIR/lib/neko
+  rm -rf $VENDOR_DIR/lib/neko/neko
+  rm -rf $VENDOR_DIR/lib/neko/nekotools
+  cp -r neko-$NEKO_VERSION-linux/* $VENDOR_DIR/lib/neko
+
+  # Add symlinks
+
+  rm -rf $VENDOR_DIR/bin/neko
+  rm -rf $VENDOR_DIR/bin/nekoc
+  rm -rf $VENDOR_DIR/bin/nekotools
+  rm -rf $VENDOR_DIR/lib/libneko.so
+
+  ln -s $VENDOR_DIR/lib/neko/neko $VENDOR_DIR/bin/neko
+  ln -s $VENDOR_DIR/lib/neko/nekoc $VENDOR_DIR/bin/nekoc
+  ln -s $VENDOR_DIR/lib/neko/nekotools $VENDOR_DIR/bin/nekotools
+  ln -s $VENDOR_DIR/lib/neko/libneko.so $VENDOR_DIR/lib/libneko.so
+
+
+  # Cleanup
+
+  rm -rf neko-$NEKO_VERSION-linux
+  rm neko-$NEKO_VERSION-linux.tar.gz
+
+
+fi
+
+
+# Install libgc, which is required for Neko
+
+if [ -n "$(command -v yum)" ]; then
+
+   yum -y install libgc
+
+elif [ -n "$(command -v pacman)" ]; then
+
+   pacman -S gc --noconfirm
+
+elif [ -n "$(command -v zypper)" ]; then
+
+   zypper --non-interactive install libgc1
+
+else
+
+   apt-get -y install libgc-dev
+
+fi
+
+if [ -d "/usr/lib64" ] && [ ! -f "/usr/lib64/libpcre.so.3" ]; then
+
+  set +e
+   ln -s /usr/lib64/libpcre.so.1 /usr/lib64/libpcre.so.3
+  set -e
+
+fi
+
+
+if [ `uname -m` = "x86_64" ]; then
+
+  echo "Downloading Haxe $HAXE_VERSION (64-bit)" | arrow
+
+  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux64.tar.gz
+
+  echo "Installing Haxe $HAXE_VERSION" | arrow
+
+  # Extract and copy files to $VENDOR_DIR/lib/haxe
+
+  mkdir -p $VENDOR_DIR/lib/haxe
+  rm -rf $VENDOR_DIR/lib/haxe/haxe
+  tar xvzf haxe-$HAXE_VERSION-linux64.tar.gz -C $VENDOR_DIR/lib/haxe --strip-components=1
+
+
+  # Add symlinks
+
+  rm -rf $VENDOR_DIR/bin/haxe
+  rm -rf $VENDOR_DIR/bin/haxelib
+  rm -rf $VENDOR_DIR/bin/haxedoc
+
+  ln -s $VENDOR_DIR/lib/haxe/haxe $VENDOR_DIR/bin/haxe
+  ln -s $VENDOR_DIR/lib/haxe/haxelib $VENDOR_DIR/bin/haxelib
+
+
+  # Set up haxelib
+
+  mkdir -p $VENDOR_DIR/lib/haxe/lib
+  chmod -R 777 $VENDOR_DIR/lib/haxe/lib
+  haxelib setup $VENDOR_DIR/lib/haxe/lib
+
+
+  # Cleanup
+
+  rm haxe-$HAXE_VERSION-linux64.tar.gz
+
+
+else
+
+  echo "Downloading Haxe $HAXE_VERSION (32-bit)" | arrow
+
+  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux32.tar.gz
+
+  echo "Installing Haxe $HAXE_VERSION" | arrow
+
+  # Extract and copy files to $VENDOR_DIR/lib/haxe
+
+   mkdir -p $VENDOR_DIR/lib/haxe
+   rm -rf $VENDOR_DIR/lib/haxe/haxe
+   tar xvzf haxe-$HAXE_VERSION-linux32.tar.gz -C $VENDOR_DIR/lib/haxe --strip-components=1
+
+
+  # Add symlinks
+
+   rm -rf $VENDOR_DIR/bin/haxe
+   rm -rf $VENDOR_DIR/bin/haxelib
+   rm -rf $VENDOR_DIR/bin/haxedoc
+
+   ln -s $VENDOR_DIR/lib/haxe/haxe $VENDOR_DIR/bin/haxe
+   ln -s $VENDOR_DIR/lib/haxe/haxelib $VENDOR_DIR/bin/haxelib
+
+
+  # Set up haxelib
+
+   mkdir -p $VENDOR_DIR/lib/haxe/lib
+   chmod -R 777 $VENDOR_DIR/lib/haxe/lib
+   $VENDOR_DIR/bin/haxelib setup $VENDOR_DIR/lib/haxe/lib
+
+
+  # Cleanup
+
+  rm haxe-$HAXE_VERSION-linux32.tar.gz
+
+fi
+
 PROFILE_PATH=$BUILD_DIR/.profile.d/haxe.sh
 mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:$HOME/bin:$BIN_DIR"' > $PROFILE_PATH
-export PATH="$PATH:$HOME/bin:$BIN_DIR"
+echo 'export PATH="$PATH:$HOME/bin:$VENDOR_DIR/bin"' > $PROFILE_PATH
+export PATH="$PATH:$HOME/bin:$VENDOR_DIR/bin"
 echo $PATH | indent
 echo "Done" | arrow
