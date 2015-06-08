@@ -20,6 +20,8 @@ else
 fi
 
 echo "exporting PATH"
+ln -s haxe-3.2.0/haxe $HOME/bin/haxe
+ln -s haxe-3.2.0/haxelib $HOME/bin/haxelib
 cd ../
 PROFILE_PATH=$BUILD_DIR/.profile.d/haxe.sh
 mkdir -p $(dirname $PROFILE_PATH)
