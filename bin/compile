@@ -119,34 +119,15 @@ fi
 
 echo "Installing libgc" | arrow
 
-if [ -n "$(command -v yum)" ]; then
+git clone git://github.com/ivmai/bdwgc.git
+cd bdwgc
+git clone git://github.com/ivmai/libatomic_ops.git
+autoreconf -vif
+automake --add-missing
+./configure
+make
+make install --prefix=$VENDOR_DIR
 
-   yum -y install libgc
-
-elif [ -n "$(command -v pacman)" ]; then
-
-   pacman -S gc --noconfirm
-
-elif [ -n "$(command -v zypper)" ]; then
-
-   zypper --non-interactive install libgc1
-
-elif [ -n "$(command -v apt-get)" ]; then
-
-   apt-get -y install libgc-dev
-
-else
-
-  git clone git://github.com/ivmai/bdwgc.git
-  cd bdwgc
-  git clone git://github.com/ivmai/libatomic_ops.git
-  autoreconf -vif
-  automake --add-missing
-  ./configure
-  make
-  make install --prefix=$VENDOR_DIR
-
-fi
 
 if [ -d "/usr/lib64" ] && [ ! -f "/usr/lib64/libpcre.so.3" ]; then
 
