@@ -116,6 +116,8 @@ fi
 
 # Install libgc, which is required for Neko
 
+echo "Installing libgc" | arrow
+
 if [ -n "$(command -v yum)" ]; then
 
    yum -y install libgc
@@ -128,9 +130,20 @@ elif [ -n "$(command -v zypper)" ]; then
 
    zypper --non-interactive install libgc1
 
-else
+elif [ -n "$(command -v apt-get)"]; then
 
    apt-get -y install libgc-dev
+
+else
+
+  git clone git://github.com/ivmai/bdwgc.git
+  cd bdwgc
+  git clone git://github.com/ivmai/libatomic_ops.git
+  autoreconf -vif
+  automake --add-missing
+  ./configure
+  make
+  make check
 
 fi
 
