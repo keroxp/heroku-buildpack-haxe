@@ -131,7 +131,7 @@ elif [ -n "$(command -v zypper)" ]; then
 
    zypper --non-interactive install libgc1
 
-elif [ -n "$(command -v apt-get)"]; then
+elif [ -n "$(command -v apt-get)" ]; then
 
    apt-get -y install libgc-dev
 
@@ -144,7 +144,7 @@ else
   automake --add-missing
   ./configure
   make
-  make check
+  make install --prefix=$VENDOR_DIR
 
 fi
 
