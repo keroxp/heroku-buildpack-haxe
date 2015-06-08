@@ -23,6 +23,9 @@ mkdir -p $BIN_DIR
 LIB_DIR=$BUILD_DIR/$VENDOR_DIR/lib
 mkdir -p $LIB_DIR
 
+HAXE_DIR=$LIB_DIR/haxe
+mkdir -p HAXE_DIR
+
 echo "BUILD_DIR=$BUILD_DIR" | indent
 
 cd $VENDOR_DIR
