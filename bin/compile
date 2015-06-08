@@ -15,7 +15,7 @@ arrow() {
 echo "Install haxe-$HAXE_VERSION" | arrow
 BUILD_DIR=$1
 
-VENDOR_DIR= $BUILD_DIR/vendor
+VENDOR_DIR=$BUILD_DIR/vendor
 mkdir -p $VENDOR_DIR
 mkdir -p $VENDOR_DIR/bin
 export PATH=$PATH:$VENDOR_DIR/bin
