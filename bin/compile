@@ -207,6 +207,7 @@ fi
 
 echo "Building Haxe Project from build.hxml" | arrow
 
+yes | haxelib install $BUILD_DIR/build.hxml
 haxe $BUILD_DIR/build.hxml
 
 echo "Done" | arrow
