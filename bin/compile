@@ -202,13 +202,12 @@ clean_cache() {
 
 echo "Building Haxe Project from build.hxml" | arrow
 
-export PATH=$PATH:$VENDOR_DIR/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib/neko
-export HAXE_STD_PATH=$VENDOR_DIR/lib/haxe/std:.
 export HAXE_HOME=$VENDOR_DIR/lib/haxe
+export HAXE_LIBRARY_PATH=$HAXE_HOME/std:.
 export NEKOPATH=$VENDOR_DIR/lib/neko
-
+export PATH=$PATH:$VENDOR_DIR/bin:$HAXE_LIBRARY_PATH
 haxelib setup $VENDOR_DIR/lib/haxe/lib
 yes | haxelib install $BUILD_DIR/build.hxml
 haxe $BUILD_DIR/build.hxml -v
