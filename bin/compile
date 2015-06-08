@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash bash
 
 echo "-----> Install haxe-3.2.0"
 BUILD_DIR=$1
