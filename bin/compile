@@ -58,16 +58,9 @@ if [ `uname -m` = "x86_64" ]; then
 
   tar xvzf neko-$NEKO_VERSION-linux64.tar.gz
   mkdir -p $VENDOR_DIR/lib/neko
-  rm -rf $VENDOR_DIR/lib/neko/neko
-  rm -rf $VENDOR_DIR/lib/neko/nekotools
   cp -r neko-$NEKO_VERSION-linux/* $VENDOR_DIR/lib/neko
 
   # Add symlinks
-
-  rm -rf $VENDOR_DIR/bin/neko
-  rm -rf $VENDOR_DIR/bin/nekoc
-  rm -rf $VENDOR_DIR/bin/nekotools
-  rm -rf $VENDOR_DIR/lib/libneko.so
 
   ln -s $VENDOR_DIR/lib/neko/libneko.so $VENDOR_DIR/lib/libneko.so
   ln -s $VENDOR_DIR/lib/neko/neko $VENDOR_DIR/bin/neko
@@ -102,16 +95,9 @@ else
 
   tar xvzf neko-$NEKO_VERSION-linux.tar.gz
   mkdir -p $VENDOR_DIR/lib/neko
-  rm -rf $VENDOR_DIR/lib/neko/neko
-  rm -rf $VENDOR_DIR/lib/neko/nekotools
   cp -r neko-$NEKO_VERSION-linux/* $VENDOR_DIR/lib/neko
 
   # Add symlinks
-
-  rm -rf $VENDOR_DIR/bin/neko
-  rm -rf $VENDOR_DIR/bin/nekoc
-  rm -rf $VENDOR_DIR/bin/nekotools
-  rm -rf $VENDOR_DIR/lib/libneko.so
 
   ln -s $VENDOR_DIR/lib/neko/neko $VENDOR_DIR/bin/neko
   ln -s $VENDOR_DIR/lib/neko/nekoc $VENDOR_DIR/bin/nekoc
@@ -168,15 +154,10 @@ if [ `uname -m` = "x86_64" ]; then
   # Extract and copy files to $VENDOR_DIR/lib/haxe
 
   mkdir -p $VENDOR_DIR/lib/haxe
-  rm -rf $VENDOR_DIR/lib/haxe/haxe
   tar xvzf haxe-$HAXE_VERSION-linux64.tar.gz -C $VENDOR_DIR/lib/haxe --strip-components=1
 
 
   # Add symlinks
-
-  rm -rf $VENDOR_DIR/bin/haxe
-  rm -rf $VENDOR_DIR/bin/haxelib
-  rm -rf $VENDOR_DIR/bin/haxedoc
 
   ln -s $VENDOR_DIR/lib/haxe/haxe $VENDOR_DIR/bin/haxe
   ln -s $VENDOR_DIR/lib/haxe/haxelib $VENDOR_DIR/bin/haxelib
@@ -205,15 +186,10 @@ else
   # Extract and copy files to $VENDOR_DIR/lib/haxe
 
    mkdir -p $VENDOR_DIR/lib/haxe
-   rm -rf $VENDOR_DIR/lib/haxe/haxe
    tar xvzf haxe-$HAXE_VERSION-linux32.tar.gz -C $VENDOR_DIR/lib/haxe --strip-components=1
 
 
   # Add symlinks
-
-   rm -rf $VENDOR_DIR/bin/haxe
-   rm -rf $VENDOR_DIR/bin/haxelib
-   rm -rf $VENDOR_DIR/bin/haxedoc
 
    ln -s $VENDOR_DIR/lib/haxe/haxe $VENDOR_DIR/bin/haxe
    ln -s $VENDOR_DIR/lib/haxe/haxelib $VENDOR_DIR/bin/haxelib
