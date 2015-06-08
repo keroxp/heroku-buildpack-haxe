@@ -21,6 +21,7 @@ mkdir -p $VENDOR_DIR/bin
 export PATH=$PATH:$VENDOR_DIR/bin
 mkdir -p $VENDOR_DIR/lib
 export LD_RUN_PATH=$LD_RUN_PATH:$VENDOR_DIR/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib
 
 if [ -n "$(command -v yum)" ]; then
 
