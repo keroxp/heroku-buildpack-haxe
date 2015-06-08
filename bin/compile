@@ -1,29 +1,39 @@
 #!/usr/bin/env bash
 
-echo "-----> Install haxe-3.2.0"
+HAXE_VERSION=3.2.0
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+arrow() {
+  sed -u 's/^/-----> /'
+}
+
+echo "Install haxe-$HAXE_VERSION" | arrow
 BUILD_DIR=$1
-
-echo "BUILD_DIR=$BUILD_DIR"
+echo "BUILD_DIR=$BUILD_DIR" | indent
 VENDOR_DIR="vendor"
-DOWNLOAD_URL="http://haxe.org/website-content/downloads/3.2.0/downloads/haxe-3.2.0-linux32.tar.gz"
 
-if [ ! -e $VENDOR_DIR/haxe-3.2.0 ]
-then
-  echo "DOWNLOAD_URL=$DOWNLOAD_URL"
-  cd $BUILD_DIR
-  mkdir -p $VENDOR_DIR
-  cd $VENDOR_DIR
-  wget $DOWNLOAD_URL
-  tar xzvf haxe-3.2.0-linux32.tar.gz
+cd $BUILD_DIR
+mkdir -p $VENDOR_DIR
+cd $VENDOR_DIR
+
+echo "Download Haxe Binary" | arrow
+
+if [ `uname -m` = "x86_64" ]; then
+  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux64.tar.gz
+  tar xzf haxe-$HAXE_VERSION-linux64.tar.gz
 else
-  echo "cache found. downloading skipped."
+  wget -c http://haxe.org/website-content/downloads/$HAXE_VERSION/downloads/haxe-$HAXE_VERSION-linux32.tar.gz
+  tar xzf haxe-$HAXE_VERSION-linux32.tar.gz
 fi
 
-echo "exporting PATH"
+echo "exporting PATH" | indent
 cd ../
 PROFILE_PATH=$BUILD_DIR/.profile.d/haxe.sh
 mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:$HOME/$VENDOR_DIR/haxe-3.2.0"' > $PROFILE_PATH
-export PATH="$PATH:$BUILD_DIR/$VENDOR_DIR/haxe-3.2.0"
-echo $PATH
-echo "-----> Done"
+echo 'export PATH="$PATH:$HOME/$VENDOR_DIR/haxe-$HAXE_VERSION"' > $PROFILE_PATH
+export PATH="$PATH:$BUILD_DIR/$VENDOR_DIR/haxe-$HAXE_VERSION"
+echo $PATH | indent
+echo "Done" | arrow
