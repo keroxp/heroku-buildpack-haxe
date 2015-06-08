@@ -25,27 +25,16 @@ clean_cache() {
   rm -rf "$CACHE_DIR/haxe" # (for apps still on the older caching strategy)
 }
 
-export_paths() {
-  export PATH=$PATH:$VENDOR_DIR/bin
-  export LD_RUN_PATH=$LD_RUN_PATH:$VENDOR_DIR/lib
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib/neko
-}
-
-
 if [ -d $CACHE_DIR/haxe ]; then
 
   echo "Restoring Haxe Build Tools from cache" | arrow
+  ls $CACHE_DIR/haxe
   cp -r $CACHE_DIR/haxe/* $VENDOR_DIR
-
-  export_paths
 
 else
 
   mkdir -p $VENDOR_DIR/bin
   mkdir -p $VENDOR_DIR/lib
-
-  export_paths
 
   if [ `uname -m` = "x86_64" ]; then
 
@@ -162,7 +151,6 @@ else
 
     mkdir -p $VENDOR_DIR/lib/haxe/lib
     chmod -R 777 $VENDOR_DIR/lib/haxe/lib
-    haxelib setup $VENDOR_DIR/lib/haxe/lib
 
 
     # Cleanup
@@ -203,17 +191,22 @@ else
 
   fi
 
-  echo "Caching Haxe Build Tools for future builds" | arrow
-  mkdir -p $CACHE_DIR/haxe
-
-  if [ -d $VENDOR_DIR ]; then
-    cp -r $VENDOR_DIR/* $CACHE_DIR/haxe
-  fi
+  # echo "Caching Haxe Build Tools for future builds" | arrow
+  # mkdir -p $CACHE_DIR/haxe
+  # cp -r $VENDOR_DIR/* $CACHE_DIR/haxe
+  # if [ -d $VENDOR_DIR ]; then
+  #   cp -r $VENDOR_DIR/* $CACHE_DIR/haxe
+  # fi
 
 fi
 
 echo "Building Haxe Project from build.hxml" | arrow
 
+export PATH=$PATH:$VENDOR_DIR/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VENDOR_DIR/lib/neko
+
+haxelib setup $VENDOR_DIR/lib/haxe/lib
 yes | haxelib install $BUILD_DIR/build.hxml
 haxe $BUILD_DIR/build.hxml
 
