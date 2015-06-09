@@ -1,29 +1,48 @@
 #!/bin/sh
 
-
-HAXE_VERSION=3.2.0
-NEKO_VERSION=2.0.0
-
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-VENDOR_DIR=$BUILD_DIR/vendor
-mkdir -p $VENDOR_DIR
-
 indent() {
-  sed -u 's/^/       /'
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
 }
 
 arrow() {
-  sed -u 's/^/-----> /'
+  c='s/^/-----> /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
 }
 
+if [ -f $BUILD_DIR/.haxerc ]; then
+  echo ".haxerc found. read version info of Haxe and Neko." | arrow
+  source $BUILD_DIR/.haxerc
+fi
 
-clean_cache() {
-  echo "Cleaning previous cache" | arrow
-  rm -rf "$CACHE_DIR/haxe" # (for apps still on the older caching strategy)
-}
+if [ -z $HAXE_VERSION ]; then
+  echo "HAXE_VERSION was unspecified. " | indent
+  echo "try to download haxe-3.2.0" | indent
+  HAXE_VERSION=3.2.0
+else
+  echo "HAXE_VERSION is $HAXE_VERSION" | indent
+fi
+
+if [ -z $NEKO_VERSION ]; then
+  echo "NEKO_VERSION was unspecified. " | indent
+  echo "try to download neko-2.0.0" | indent
+  NEKO_VERSION=2.0.0
+else
+  echo "NEKO_VERSION is $NEKO_VERSION" | indent
+fi
+
+VENDOR_DIR=$BUILD_DIR/vendor
+mkdir -p $VENDOR_DIR
 
 # if [ -d $CACHE_DIR/haxe ]; then
 
