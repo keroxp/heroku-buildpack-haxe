@@ -227,6 +227,8 @@ export HAXEPATH=$VENDOR_DIR/lib/haxe
 export HAXE_STD_PATH=$HAXEPATH/std:.
 export NEKOPATH=$VENDOR_DIR/lib/neko
 export PATH=$PATH:$VENDOR_DIR/bin:$HAXE_STD_PATH
+# return to build dir
+cd $BUILD_DIR
 $HAXEPATH/haxelib setup $VENDOR_DIR/lib/haxe/lib
 yes | $HAXEPATH/haxelib install $BUILD_DIR/build.hxml
 $HAXEPATH/haxe $BUILD_DIR/build.hxml -v
